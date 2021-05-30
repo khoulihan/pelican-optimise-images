@@ -54,7 +54,7 @@ def _process_file(f):
                 picture = bs4.BeautifulSoup("""
                 <picture>
                     <source type="image/webp" srcset="{optimal}"/>
-                    <source type="{compat_type}" src="{compat}"/>
+                    <source type="{compat_type}" srcset="{compat}"/>
                     <img src="{compat}"/>
                 </picture>
                 """.format(

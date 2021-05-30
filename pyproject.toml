@@ -11,12 +11,14 @@ click = "^8.0.1"
 beautifulsoup4 = "4.8.2"
 lxml = "4.2.1"
 pelican = "^4.2.0"
+hitherdither = {git = "https://github.com/hbldh/hitherdither.git"}
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
 
 [tool.poetry.scripts]
 optimise_image = "main:optimise"
+prepare_samples = "main:prepare_samples"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

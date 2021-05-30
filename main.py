@@ -3,6 +3,7 @@ import shutil
 from pathlib import Path
 import click
 from pelican_optimise_images import optimise as _opt
+from pelican_optimise_images import prepare_samples as _prep
 
 
 def backup_file(file_path):
@@ -15,6 +16,16 @@ def _style_saving_percentage(saving):
         "{:.1%}".format(saving),
         fg='red' if saving > 1.0 else 'green'
     )
+
+
+@click.command()
+@click.argument(
+    'image_file',
+    type=click.Path(exists=True, dir_okay=False)
+)
+def prepare_samples(image_file):
+    image_file_path = Path(image_file)
+    _prep(image_file_path)
 
 
 @click.command()

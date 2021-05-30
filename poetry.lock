@@ -98,7 +98,7 @@ Pillow = ">=3.3.1"
 
 [package.source]
 type = "git"
-url = "https://www.github.com/hbldh/hitherdither"
+url = "https://github.com/hbldh/hitherdither.git"
 reference = "master"
 resolved_reference = "b688094bb1e10bf5eda1ba999eb3c98a46ed9407"
 
@@ -345,7 +345,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pyt
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "6d053629b0aa47dfb2370ca3a142ca93550ae2e63ea817603649cfaaf4c69ac4"
+content-hash = "1ab45a63f1e428e82c05ef9f761a906ffd876da1b679a5e42b492de0cbd4b8f8"
 
 [metadata.files]
 atomicwrites = [

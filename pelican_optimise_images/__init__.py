@@ -9,5 +9,5 @@ __status__ = "Development"
 __license__ = 'MIT'
 __copyright__ = 'Copyright 2021'
 
-from ._optimise import optimise
+from ._optimise import optimise, prepare_samples
 from ._plugin import register
