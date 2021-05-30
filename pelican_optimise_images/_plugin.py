@@ -34,13 +34,14 @@ def _process_file(f):
             src = img['src']
             classes = img.get('class', [])
             if 'poi-no-optimise' not in classes and src.endswith(('.png', '.jpg', '.jpeg')):
+                print(src)
                 if _root_url and src.startswith(_root_url):
                     src = src[len(_root_url):]
                 elif src.startswith("http"):
                     # If the src was absolute but didn't match the root url
                     # or no root url is set, then we can't tell if it is a
                     # local image or not
-                    return
+                    continue
                 src = src.lstrip('/')
                 src_path = _output_path / src
 
@@ -74,6 +75,7 @@ def _process_file(f):
 
     def _process():
         nonlocal soup, modified
+        print(f)
         with open(f) as input:
             soup = bs4.BeautifulSoup(input.read(), features="lxml")
 
