@@ -12,23 +12,26 @@ __all__ = ['register']
 _output_path = None
 _root_url = None
 _optimisation_specs = {}
+_create_captions = True
 
 
 def _retrieve_settings(p):
-    global _output_path, _root_url, _optimisation_specs
+    global _output_path, _root_url, _optimisation_specs, _create_captions
 
     _output_path = Path(p.output_path)
     _root_url = p.settings.get('SITEURL', '')
     _optimisation_specs = p.settings.get('POI_OPTIMISATIONS', {})
+    _create_captions = p.settings.get('POI_CREATE_CAPTIONS', True)
 
 
 def _process_file(f):
+    print("Processing file %s" % f)
     soup = None
     modified = False
 
     def _handle_imgs(imgs):
         nonlocal modified, soup
-        global _output_path, _root_url, _optimisation_specs
+        global _output_path, _root_url, _optimisation_specs, _create_captions
 
         for img in imgs:
             src = img['src']
@@ -51,26 +54,48 @@ def _process_file(f):
 
                 compat, optimal = optimise(src_path, **optimisations)
 
-                picture = bs4.BeautifulSoup("""
-                <picture>
-                    <source type="image/webp" srcset="{optimal}"/>
-                    <source type="{compat_type}" srcset="{compat}"/>
-                    <img src="{compat}"/>
-                </picture>
-                """.format(
-                    optimal="{}/{}".format(_root_url, str(optimal)[len(str(_output_path)):].lstrip('/')),
-                    compat="{}/{}".format(_root_url, str(compat)[len(str(_output_path)):].lstrip('/')),
-                    compat_type="image/png" if compat.suffix == '.png' else "image/jpeg"
-                ),
-                features="lxml")
+                replacement = None
+                new_img = None
+                if 'title' in img.attrs and _create_captions:
+                    replacement, new_img = _create_figure(compat, optimal, img.attrs['title'])
+                else:
+                    replacement, new_img = _create_picture(compat, optimal)
 
-                new_img = picture.img
                 for att in img.attrs.keys():
                     if att != 'src':
                         new_img[att] = img[att]
 
-                img.replace_with(picture)
+                img.replace_with(replacement)
                 modified = True
+
+    def _create_picture(compat, optimal):
+        picture = bs4.BeautifulSoup("""
+            <picture>
+                <source type="image/webp" srcset="{optimal}"/>
+                <source type="{compat_type}" srcset="{compat}"/>
+                <img src="{compat}"/>
+            </picture>
+            """.format(
+                optimal="{}/{}".format(_root_url, str(optimal)[len(str(_output_path)):].lstrip('/')),
+                compat="{}/{}".format(_root_url, str(compat)[len(str(_output_path)):].lstrip('/')),
+                compat_type="image/png" if compat.suffix == '.png' else "image/jpeg"
+            ),
+            features="lxml"
+        )
+        return picture.picture, picture.img
+
+    def _create_figure(compat, optimal, caption):
+        picture, img = _create_picture(compat, optimal)
+        figure = bs4.BeautifulSoup("""
+                <figure>
+                    <figcaption>{caption}</figcaption>
+                </figure>
+            """.format(caption=caption),
+            features="lxml"
+        )
+        figure.figure.insert(0, picture)
+        print(figure.figure.prettify())
+        return figure.figure, img
 
     def _process():
         nonlocal soup, modified
@@ -97,4 +122,5 @@ def _finalized(p):
 
 # Register function expected by pelican
 def register():
+    print("Registering image optimisation plugin")
     signals.finalized.connect(_finalized)
