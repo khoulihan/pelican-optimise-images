@@ -25,7 +25,6 @@ def _retrieve_settings(p):
 
 
 def _process_file(f):
-    print("Processing file %s" % f)
     soup = None
     modified = False
 
@@ -94,7 +93,6 @@ def _process_file(f):
             features="lxml"
         )
         figure.figure.insert(0, picture)
-        print(figure.figure.prettify())
         return figure.figure, img
 
     def _process():
@@ -122,5 +120,4 @@ def _finalized(p):
 
 # Register function expected by pelican
 def register():
-    print("Registering image optimisation plugin")
     signals.finalized.connect(_finalized)
